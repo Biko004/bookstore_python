@@ -51,12 +51,11 @@ def get_books():
 @cross_origin()
 def get_single_book():
     book_id = int(request.args.get('id'))
+    my_item = None
     for item in books:
         if item['id'] == book_id:
             my_item = item
             break
-    else:
-        my_item = 'no item'
     return json.dumps(my_item)
 
 
@@ -64,9 +63,24 @@ def get_single_book():
 @cross_origin()
 def add_book():
     book=request.get_json()
+    print(book)
     books.append(book)
-    print(books)
-    return json.dumps(books)
+    return "SUCCESS:  Bookstore contains " + str(len(books)) + " books"
+
+
+@app.route('/update_book', methods=["POST"])
+@cross_origin()
+def update_book():
+    resp = request.get_json()
+    for item in books:
+        if item["id"] == resp["id"]:
+            item['name'] = resp['name']
+            item['author'] = resp['author']
+            item['year'] = resp['year']
+            return "SUCCESS"
+    return "what?"
+
+
 
 @app.route('/static/<path:path>')
 def static_root(path):
